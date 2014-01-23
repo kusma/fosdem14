@@ -25,6 +25,11 @@
 			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
 		</script>
 
+		<style>
+			tr:nth-child(even) {background: rgba(0, 0, 0, 0.1)}
+			td {border: 1px solid black;}
+		</style>
+
 		<!--[if lt IE 9]>
 		<script src="lib/js/html5shiv.js"></script>
 		<![endif]-->
@@ -37,24 +42,336 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>Reveal.js</h1>
-					<h3>HTML Presentations Made Easy</h3>
+					<h1>Grate</h1>
+					<h3>Liberating NVIDIA's Tegra GPU</h3>
 					<p>
-						<small>Created by <a href="http://hakim.se">Hakim El Hattab</a> / <a href="http://twitter.com/hakimel">@hakimel</a></small>
+						<small>February 2013 - <a href="http://kusmabite.demoscene.no">Erik "kusma" Faye-Lund</a> / <a href="http://twitter.com/kusmabite">@kusmabite</a></small>
 					</p>
 				</section>
 
 				<section>
-					<h2>Heads Up</h2>
-					<p>
-						reveal.js is a framework for easily creating beautiful presentations using HTML. You'll need a browser with
-						support for CSS 3D transforms to see it in its full glory.
-					</p>
+					<h2>Who am I</h2>
+					<ul>
+						<li class="fragment">About 20 years of graphics programming experience
+							<ul>
+								<li>10 years professionally</li>
+								<li>Former driver-developer at Falanx / ARM's Mali team</li>
+								<li>Involved in the development of OpenGL ES 1.1 and 2.0</li>
+							</ul>
+						</li>
+						<li class="fragment">Active open source contributor
+							<ul>
+								<li>Lots of Git patches</li>
+								<li>Linux, Android, Angle, Mesa, ...</li>
+							</ul>
+						</li>
+						<li class="fragment">Demo scener</li>
+						<li class="fragment">Prefer Windows ;-)</li>
+					</ul>
 
 					<aside class="notes">
 						Oh hey, these are some notes. They'll be hidden in your presentation, but you can see them if you open the speaker notes window (hit 's' on your keyboard).
 					</aside>
 				</section>
+
+				<section>
+					<h2>What is Grate</h2>
+					<div class="fragment">Probably the furthest behind of the ARM SoC reverse engineered driver efforts</div>
+				</section>
+
+				<section>
+					<h2>The history so far</h2>
+					<ul>
+						<li class="fragment">In the summer/fall of 2012, I got envyous of the Lima-guys, so I decided to start looking into Tegra</li>
+						<li class="fragment">Around FOSDEM 2013, I had:
+							<ul>
+								<li>Command list capturing and parsing</li>
+								<li>Envytools-style RNNDB descriptions of most OpenGL ES 2.0 non-shader state</li>
+								<li>A very rough fragment shader disassembler</li>
+								<li>Reverse enginered the rough interface to the shader-compiler</li>
+							</ul>
+						</li>
+						<li class="fragment">Got bored with it</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Enter Thierry</h2>
+					<ul>
+						<li class="fragment">A month later, Luc told me to get my ass on IRC</li>
+						<li class="fragment">Turns out, while I was procrastinating Thierry Reding had picked up the ball:
+							<ul>
+								<li>Linux DRM driver with KMS</li>
+								<li>LibDRM</li>
+								<li>Started on a DDX-driver</li>
+								<li>Got command-stream replay working</li>
+								<li>Even did the initial work on a Gallium driver!</li>
+							</ul>
+						</li>
+						<li class="fragment">Then Thierry got hired by NVIDIA</li>
+						<li class="fragment">I'm slowly trying to follow in his footsteps</li>
+						<li class="fragment">Give him a hand!</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Current status</h2>
+				</section>
+
+				<section>
+					<h3>Tegra 2</h3>
+					<ul>
+						<li class="fragment">This is the core I've focused on</li>
+						<li class="fragment">Command stream dumping</li>
+						<li class="fragment">Basic rendering through command stream replay
+							<ul>
+								<li>Can modify a lot of state by tampering with the command stream</li>
+							</ul>
+						</li>
+						<li class="fragment">Upstream Linux DRM driver</li>
+						<li class="fragment">LibDRM support in a <a href="http://github.com/grate-driver/libdrm">private fork</a></li>
+						<li class="fragment">A <a href="http://github.com/grate-driver/mesa">Gallium driver</a> that can do glClear and glReadPixels with GR2D</li>
+						<li class="fragment">Command stream dumping</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Tegra 3</h3>
+					<p class="fragment"></span>Replay seems to just work. Identical 3D core?</p>
+				</section>
+
+				<section>
+					<h3>Tegra 4</h3>
+					<ul>
+						<li class="fragment">Some additional registers discovered</li>
+						<li class="fragment">Not <b>strictly</b> compatible?
+							<ul>
+								<li>But modified Tegra 2 command-streams have been replayed</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Tegra K1</h3>
+					<ul>
+						<li class="fragment">Nothing done</li>
+						<li class="fragment">Kepler based
+							<ul>
+								<li>Lacks most of the components of GeForce</li>
+							</ul>
+						</li>
+						<li class="fragment">Maybe something for Nouveau instead?</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Tegra 2 GPU overview</h3>
+					<ul>
+						<li class="fragment">Code named AR20</li>
+						<li class="fragment">Two components:
+							<ul>
+								<li>GR2D</li>
+								<li>GR3D</li>
+							</ul>
+						</li>
+						<li class="fragment">16 bit depth buffer</li>
+						<li class="fragment">Proprietary OpenGL ES drivers</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>GR2D</h3>
+					<ul>
+						<li class="fragment">Documented in the publically available <a href="https://developer.nvidia.com/tegra-3-technical-reference-manual">TRM</a>
+							<ul>
+								<li>Requires signing up and agreeing to an EULA</li>
+							</ul>
+						</li>
+						<li class="fragment">Example <a href="https://gitorious.org/linux-host1x/libdrm-host1x/source/04daac7f7e5c4af6e89fee2db68abc53def542c6:tegra/2d">source code</a> available</li>
+						<li class="fragment">Blits / fills / patterns</li>
+						<li class="fragment">Tiling / linear source and destination</li>
+						<li class="fragment">Stretching</li>
+						<li class="fragment">Rotation / flipping
+							<ul>
+								<li>90&deg; / 180&deg; / 270&deg;</li>
+							</ul>
+						</li>
+						<li class="fragment">Blending</li>
+						<li class="fragment">CSAA resolve</li>
+						<li class="fragment">ROP3</li>
+						<li class="fragment">Lots more, see TRM</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>GR3D</h3>
+					<ul>
+						<li class="fragment">Non-unified shader</li>
+						<li class="fragment">Performs blending in the fragment shader</li>
+						<li class="fragment">16 bit depth buffer
+							<ul>
+								<li>24 bit on Tegra 4</li>
+							</ul>
+						</li>
+						<li class="fragment">16 MRTs
+							<ul>
+								<li>Including depth/stencil</li>
+							</ul>
+						</li>
+						<li class="fragment">Occlusion queries</li>
+						<li class="fragment">Powerful texturing hardware:
+							<ul>
+								<li>Floating-point textures</li>
+								<li>Texture arrays</li>
+								<li>Anisotropic filtering</li>
+								<li>ETC1, S3TC, DXT1, LATC</li>
+							</ul>
+						</li>
+						<li class="fragment">GL_OES_standard_derivatives</li>
+						<li class="fragment">GL_NV_draw_path</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Vertex shader ISA</h3>
+					<ul>
+						<li class="fragment">NV30 subset
+							<ul>
+								<li>4 component vector ALU</li>
+								<li>scalar SFU</li>
+							</ul>
+						</li>
+						<li class="fragment">No control flow</li>
+						<li class="fragment">Straight forward to generate code for</li>
+						<li class="fragment">Share code with Nouveau?</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Fragment shader ISA</h3>
+					<ul>
+						<li class="fragment">No control flow</li>
+						<li class="fragment">At least 3 separate instruction streams:
+							<ul>
+								<li class="fragment">ALU - Arithmetic/Logic Unit</li>
+								<li class="fragment">MFU - Multi-Function Unit
+									<ul>
+										<li>Varying interpolation</li>
+										<li>Complex function evaluation</li>
+										<li>Pipelined?</li>
+									</ul>
+								</li>
+								<li class="fragment">TEX - Texturing Unit</li>
+								<li class="fragment">Others? (import / export)</li>
+							</ul>
+						</li>
+						<li class="fragment">20-bit floating-point</li>
+						<li class="fragment">10-bit fixed-point</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Fragment shader ISA: ALU</h3>
+					<ul>
+						<li class="fragment">Pretty much understood
+							<ul>
+								<li>Most bits deciphered</li>
+								<li>14 out of 64 bits remain</li>
+							</ul>
+						</li>
+						<li class="fragment">Instructions comes in packets
+							<ul>
+								<li>Can perform 4 scalar operations per instruction packet</li>
+								<li>...or 3 scalar operations with 2 highp / 4 lowp embedded constants</li>
+							</ul>
+						</li>
+						<li class="fragment">Glorified MAD
+							<ul>
+								<li>D = A * B + C</li>
+								<li>D = A * B + C * C</li>
+								<li>D = (A + C) * B</li>
+								<li>D += ...</li>
+							</ul>
+						</li>
+						<li class="fragment">Any instruction can be conditional</li>
+						<li class="fragment">Absolute / negate operands</li>
+						<li class="fragment">Scale operands by 2</li>
+						<li class="fragment">Saturate result</li>
+						<li class="fragment">Scale result by 0.5, 1, 2 or 4</li>
+					</ul>
+				</section>
+
+				<section>
+					<table>
+						<thead>
+							<tr><th align="right">Bits</th> <th align="left">Meaning</th></tr>
+						</thead>
+						<tbody>
+							<tr><td align="right">62..63</td><td align="left">Opcode</td></tr>
+							<tr><td align="right">61</td><td align="left">Accumulate result</td></tr>
+							<tr><td align="right">59..60</td><td align="left">???</td></tr>
+							<tr><td align="right">57..58</td><td align="left">scale result</td></tr>
+							<tr><td align="right">56</td><td align="left">saturate result</td></tr>
+							<tr><td align="right">54..55</td><td align="left">condition code</td></tr>
+							<tr><td align="right">53</td><td align="left">write condition register</td></tr>
+							<tr><td align="right">52</td><td align="left">write uniform (?)</td></tr>
+							<tr><td align="right">47..51</td><td align="left">destination register</td></tr>
+							<tr><td align="right">46</td><td align="left">write high subregister</td></tr>
+							<tr><td align="right">45</td><td align="left">write low subregister</td></tr>
+							<tr><td align="right">32..44</td><td align="left">operand rA</td></tr>
+							<tr><td align="right">19..31</td><td align="left">operand rB</td></tr>
+							<tr><td align="right">6..18</td><td align="left">operand rC</td></tr>
+							<tr><td align="right">5</td><td align="left">rC scale by rC</td></tr>
+							<tr><td align="right">3..4</td><td align="left">???</td></tr>
+							<tr><td align="right">2</td><td align="left">scale rC by rB or rC</td></tr>
+							<tr><td align="right">0..1</td><td align="left">???</td></tr>
+						</tbody>
+					</table>
+				</section>
+
+
+				<section>
+					<h3>Fragment shader ISA: MFU</h3>
+					<ul>
+						<li class="fragment">Probably based on <a href="http://www.acsel-lab.com/arithmetic/arith17/papers/ARITH17_Oberman.pdf">&quot;A High-Performance Area-Efficient Multifuction Interpolator&quot;</a>, Oberman et. al, 2005</li>
+						<li class="fragment">Complex function evaluation pretty much understood
+							<ul>
+								<li>NOP, RCP, RSQ, LG2, EX2, SQRT, SIN, COS, FRC</li>
+								<li>PREEX2, PRESIN, PRECOS
+									<ul>
+										<li>Not unlike NVIDIA with two-step trig</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li class="fragment">Varying write still a mystery :(
+							<ul>
+								<li>This is a major blocker</li>
+								<li>Help, please!</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>Fragment shader ISA: TEX</h3>
+					<ul>
+						<li class="fragment">Somewhat understood, but...
+							<ul class="fragment">
+								<li>Not clear where texture coordinates come from</li>
+								<li>Progressing on this feels pointless without varying writes understood</li>
+							</ul>
+						</li>
+						<li class="fragment">Seems simple
+							<ul>
+								<li>2D textures and cube maps lookups compile bitwise identical</li>
+								<li>No need to normalize cubemap inputs</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+
 
 				<!-- Example of nested vertical slides -->
 				<section>
